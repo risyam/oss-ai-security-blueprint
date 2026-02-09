@@ -18,7 +18,8 @@ graph TD
     
     subgraph Models ["Model Layer"]
         EmbedModel["Embedding Model<br/>(Nomic / JinaAI)"]
-        LLM["LLM Service<br/>(Ollama / Hugging Face / vLLM)"]
+        Inference["Inference Engine<br/>(Ollama / vLLM)"]
+        LLM["LLM Weights<br/>(Llama 3 / Mistral / Gemma)"]
     end
     
     subgraph Data ["Data Layer"]
@@ -36,8 +37,10 @@ graph TD
     Orchestrator -->|5. Query Context| VectorDB
     VectorDB -.->|Relevant Chunks| Orchestrator
     
-    Orchestrator -->|6. Prompt + Context| LLM
-    LLM -.->|Generated Response| Orchestrator
+    Orchestrator -->|6. Prompt + Context| Inference
+    Inference -.->|Load Model| LLM
+    LLM -.->|Weights| Inference
+    Inference -.->|Generated Response| Orchestrator
     
     Orchestrator -->|7. Processed Response| API
     API -->|8. JSON Response| UI
@@ -47,8 +50,10 @@ graph TD
     classDef plain fill:#fff,stroke:#333,stroke-width:1px,color:#000;
     classDef highlight fill:#e1f5fe,stroke:#01579b,stroke-width:2px,color:#000;
     classDef database fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#000;
+    classDef model fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,color:#000;
     
-    class UI,API,Orchestrator,EmbedModel,LLM plain;
+    class UI,API,Orchestrator,EmbedModel,Inference plain;
     class VectorDB database;
     class User highlight;
+    class LLM model;
 ```
