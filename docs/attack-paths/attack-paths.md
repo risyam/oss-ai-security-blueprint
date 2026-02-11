@@ -23,6 +23,7 @@ graph TD
         EmbedModel["Embedding Model<br/>(Nomic / JinaAI)"]
         Inference["Inference Engine<br/>(Ollama / vLLM)"]
         LLM["LLM Weights<br/>(Llama 3 / Mistral / Gemma)"]
+        Registry["Model Registry"]
     end
 
     subgraph Data ["Data Layer"]
@@ -30,7 +31,9 @@ graph TD
         Documents[("Source Documents")]
     end
 
-    %% Normal Data Flow (gray, indices 0-13)
+    %% ========================
+    %% Normal Data Flow
+    %% ========================
     User -->|Prompt| UI
     UI -->|Request| API
     API -->|Forward| Orchestrator
@@ -40,41 +43,49 @@ graph TD
     VectorDB -.->|Context| Orchestrator
     Orchestrator -->|Prompt + Context| Inference
     Inference -.->|Load| LLM
+    Registry -.->|Pull Weights| LLM
     LLM -.->|Weights| Inference
     Inference -.->|Response| Orchestrator
     Orchestrator -->|Result| API
     API -->|JSON| UI
     UI -->|Display| User
 
-    %% === ATTACK PATHS ===
+    %% ========================
+    %% ATTACK PATHS
+    %% ========================
 
-    %% Path 1: Frontend Attacks (RED - indices 14-15)
+    %% Path 1: Frontend (RED)
     Attacker -.->|"1a. Prompt Injection"| UI
     Attacker -.->|"1b. Jailbreak"| UI
 
-    %% Path 2: API Attacks (ORANGE - indices 16-17)
+    %% Path 2: API (ORANGE)
     Attacker -.->|"2a. Auth Bypass"| API
     Attacker -.->|"2b. Rate Limit Evasion"| API
 
-    %% Path 3: Orchestrator Attacks (YELLOW/GOLD - indices 18-19)
+    %% Path 3: Orchestrator (GOLD)
     Attacker -.->|"3a. Chain Poisoning"| Orchestrator
     Attacker -.->|"3b. Tool Abuse"| Orchestrator
+    Orchestrator -.->|"3c. Secret Exfiltration"| Attacker
 
-    %% Path 4: Vector DB Attacks (GREEN - indices 20-22)
+    %% Path 4: Vector DB (GREEN)
     Attacker -.->|"4a. Vector Poisoning"| Documents
     Documents -.->|"4b. Poisoned Data"| VectorDB
     VectorDB -.->|"4c. Cross-Tenant Leak"| Orchestrator
 
-    %% Path 5: Model Layer Attacks (BLUE - indices 23-24)
-    Attacker -.->|"5a. Supply Chain Attack"| LLM
-    Inference -.->|"5b. Model Extraction"| Attacker
+    %% Path 5: Model Layer (BLUE)
+    Attacker -.->|"5a. Supply Chain Attack"| Registry
+    Attacker -.->|"5b. Direct Model Query"| Inference
+    Inference -.->|"5c. Model Extraction"| Attacker
+    Attacker -.->|"5d. Embedding Manipulation"| EmbedModel
 
-    %% Path 6: End-to-End Attacks (PURPLE - indices 25-26)
-    VectorDB -.->|"6a. Indirect Injection"| Orchestrator
+    %% Path 6: End-to-End (PURPLE)
+    VectorDB -.->|"6a. Indirect Injection (RAG)"| Orchestrator
     Orchestrator -.->|"6b. Data Exfiltration"| User
 
 
+    %% ========================
     %% Node Styling
+    %% ========================
     classDef default fill:#fff,stroke:#333,stroke-width:1px,color:#000;
     classDef userNode fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#000;
     classDef attackerNode fill:#ffebee,stroke:#c62828,stroke-width:3px,color:#c62828;
@@ -84,21 +95,31 @@ graph TD
     class User userNode;
     class Attacker attackerNode;
     class VectorDB,Documents dbNode;
-    class LLM,Inference,EmbedModel modelNode;
+    class LLM,Inference,EmbedModel,Registry modelNode;
 
-    %% Link Styles by Attack Category
-    %% Path 1: Frontend (RED)
-    linkStyle 14,15 stroke:#c62828,stroke-width:2px,stroke-dasharray:5;
-    %% Path 2: API (ORANGE)
-    linkStyle 16,17 stroke:#e65100,stroke-width:2px,stroke-dasharray:5;
-    %% Path 3: Orchestrator (GOLD)
-    linkStyle 18,19 stroke:#f9a825,stroke-width:2px,stroke-dasharray:5;
-    %% Path 4: Vector DB (GREEN)
-    linkStyle 20,21,22 stroke:#2e7d32,stroke-width:2px,stroke-dasharray:5;
-    %% Path 5: Model (BLUE)
-    linkStyle 23,24 stroke:#1565c0,stroke-width:2px,stroke-dasharray:5;
-    %% Path 6: End-to-End (PURPLE)
-    linkStyle 25,26 stroke:#7b1fa2,stroke-width:2px,stroke-dasharray:5;
+    %% ========================
+    %% Link Styling by Category
+    %% ========================
+
+    %% Frontend (RED)
+    linkStyle 15,16 stroke:#c62828,stroke-width:2px,stroke-dasharray:5;
+
+    %% API (ORANGE)
+    linkStyle 17,18 stroke:#e65100,stroke-width:2px,stroke-dasharray:5;
+
+    %% Orchestrator (GOLD)
+    linkStyle 19,20,21 stroke:#f9a825,stroke-width:2px,stroke-dasharray:5;
+
+    %% Vector DB (GREEN)
+    linkStyle 22,23,24 stroke:#2e7d32,stroke-width:2px,stroke-dasharray:5;
+
+    %% Model (BLUE)
+    linkStyle 25,26,27,28 stroke:#1565c0,stroke-width:2px,stroke-dasharray:5;
+
+    %% End-to-End (PURPLE)
+    linkStyle 29,30 stroke:#7b1fa2,stroke-width:2px,stroke-dasharray:5;
+
+
 ```
 
 ---
@@ -118,18 +139,22 @@ graph TD
 
 ## Attack Path Details
 
-| # | Path | Entry Point | Impact | Mitigation |
-|---|------|-------------|--------|------------|
-| 1a | Prompt Injection | User input | Bypass safety filters, extract data | Input validation, output filtering, system prompt hardening |
-| 1b | Jailbreak | User input | Override system instructions | Guardrails (Llama Guard), content moderation, prompt shields |
-| 2a | Auth Bypass | API Gateway | Unauthorized access | OAuth 2.0/OIDC, API key rotation, zero-trust architecture |
-| 2b | Rate Limit Evasion | API Gateway | DoS, resource exhaustion | Adaptive rate limiting, CAPTCHA, request throttling |
-| 3a | Chain Poisoning | Orchestrator | Corrupt reasoning chain | Chain validation, step-by-step verification, sandboxing |
-| 3b | Tool Abuse | Orchestrator | Execute unintended tools | Tool allowlisting, permission scoping, human-in-the-loop |
-| 4a | Vector Poisoning | Documents | Inject malicious content | Document provenance, content signing, ingestion validation |
-| 4b | Poisoned Data | Vector DB | Serve corrupted context | Anomaly detection, embedding integrity checks |
-| 4c | Cross-Tenant Leak | Vector DB | Access other users' data | Tenant isolation, namespace separation, RBAC |
-| 5a | Supply Chain Attack | LLM Weights | Backdoored model behavior | Model checksums, signed weights, trusted registries |
-| 5b | Model Extraction | Inference | Steal model via queries | Query rate limiting, output perturbation, watermarking |
-| 6a | Indirect Injection | RAG Context | Hidden instructions in docs | Context sanitization, instruction hierarchy, grounding |
-| 6b | Data Exfiltration | Response | Leak sensitive data to user | Output filtering, PII detection, response auditing |
+| #  | Path                   | Entry Point        | Impact                        | Mitigation                                 |
+| -- | ---------------------- | ------------------ | ----------------------------- | ------------------------------------------ |
+| 1a | Prompt Injection       | User → UI          | Override system instructions  | Prompt isolation, system message hardening |
+| 1b | Jailbreak              | User → UI          | Disable safety layers         | Guard models, layered moderation           |
+| 2a | Auth Bypass            | API                | Unauthorized API usage        | OAuth2/OIDC, mTLS                          |
+| 2b | Rate Limit Evasion     | API                | DoS / cost explosion          | Adaptive rate limiting                     |
+| 3a | Chain Poisoning        | Orchestrator       | Corrupt reasoning chain       | Step verification, execution sandbox       |
+| 3b | Tool Abuse             | Orchestrator       | Lateral system compromise     | Tool allowlist, scoped credentials         |
+| 3c | Secret Exfiltration    | Tool execution     | Leak tokens / secrets         | Vault-based secret isolation               |
+| 4a | Vector Poisoning       | Document ingestion | Malicious context injection   | Content signing, ingestion validation      |
+| 4b | Poisoned Retrieval     | Vector DB          | Context corruption            | Retrieval anomaly detection                |
+| 4c | Cross-Tenant Leak      | Vector DB          | Data exposure                 | Namespace isolation, RBAC                  |
+| 5a | Model Supply Chain     | Registry           | Backdoored weights deployed   | Signed artifacts, checksum validation      |
+| 5b | Direct Model Query     | Inference          | Bypass orchestration controls | Network segmentation                       |
+| 5c | Model Extraction       | Inference          | Intellectual property theft   | Query monitoring, watermarking             |
+| 5d | Embedding Manipulation | Embedding model    | Skew retrieval behavior       | Model integrity checks                     |
+| 6a | Indirect Injection     | RAG context        | Hidden instruction execution  | Context sanitization                       |
+| 6b | Data Exfiltration      | Response channel   | Sensitive data leakage        | Output filtering, PII scanning             |
+
