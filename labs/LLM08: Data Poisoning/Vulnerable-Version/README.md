@@ -1,11 +1,14 @@
-# 🧪 RAG Poisoning Attack Lab — Vulnerable Version
+# 🧪 Vector & Embedding Weakness Lab — Vulnerable Version
 
-> **Threat Category:** Data Poisoning · Prompt Injection via Documents
-> **OWASP LLM Top 10:** [LLM06 — Sensitive Information Disclosure](https://genai.owasp.org/llmrisk/llm06-sensitive-information-disclosure/) · [LLM01 — Prompt Injection](https://genai.owasp.org/llmrisk/llm01-prompt-injection/)
+> **Threat Category:** Data Poisoning via RAG Document Ingestion
+> **OWASP LLM Top 10:** [LLM08:2025 — Vector and Embedding Weaknesses](https://genai.owasp.org/llmrisk/llm08-vector-and-embedding-weaknesses/)
 
 ## Overview
 
-This lab demonstrates how a **Retrieval-Augmented Generation (RAG)** pipeline can be exploited through **document poisoning**. A seemingly innocent PDF resume is uploaded into the system, but it contains hidden adversarial instructions that manipulate the AI Hiring Assistant into producing biased, fabricated, or attacker-controlled responses.
+This lab demonstrates **data poisoning** in a **Retrieval-Augmented Generation (RAG)** pipeline — classified under [OWASP LLM08:2025 (Vector and Embedding Weaknesses)](https://genai.owasp.org/llmrisk/llm08-vector-and-embedding-weaknesses/). A seemingly innocent PDF resume is uploaded into the system, but it contains hidden adversarial instructions. The vector/embedding pipeline ingests this poisoned data without validation, stores it in the vector database, and later retrieves and feeds these poisoned chunks to the LLM — manipulating the AI Hiring Assistant into producing biased, fabricated, or attacker-controlled responses.
+
+> **Note on classification:** The attack *payload* uses prompt injection techniques (hidden instructions in the PDF), but the *vulnerability* is in the vector/embedding pipeline — it blindly ingests untrusted data with no validation, sanitization, or provenance checks. This is why OWASP classifies this scenario under **LLM08 (Vector and Embedding Weaknesses)**, not LLM01 (Prompt Injection). See [OWASP LLM08 Scenario #1](https://genai.owasp.org/llmrisk/llm08-vector-and-embedding-weaknesses/) for the exact description of this attack.
+
 
 ### Why Does This Matter?
 
@@ -13,7 +16,7 @@ RAG is one of the most widely adopted patterns for grounding LLM responses in en
 
 - **Override the system prompt** — hidden text in a PDF can instruct the LLM to ignore its original role.
 - **Fabricate qualifications** — the model parrots false claims embedded in the document.
-- **Exfiltrate or bias decisions** — poisoned context steers hiring recommendations, financial analyses, or any domain the RAG serves.
+- **Bias decisions** — poisoned context steers hiring recommendations, financial analyses, or any domain the RAG serves.
 
 ---
 
@@ -51,10 +54,11 @@ This version is **deliberately insecure** to serve as a teaching tool. The key w
 
 | # | Vulnerability | Location | Description |
 |---|---|---|---|
-| 1 | **No input sanitization** | `app.py:29-33` | Uploaded PDFs are saved and processed with zero validation — no content filtering, no metadata checks. |
-| 2 | **Weak system prompt** | `app.py:86-95` | The prompt template provides no guardrails against instruction injection. A poisoned document can override the LLM's behavior. |
-| 3 | **Unrestricted retrieval** | `app.py:104` | The retriever fetches the top 5 chunks (`k=5`) without relevance thresholds, increasing the chance poisoned chunks are included. |
-| 4 | **No document provenance** | Entire pipeline | There is no tracking of who uploaded what, or any trust scoring of document sources. |
+| 1 | **No input sanitization** | `app.py:29-33` | Uploaded PDFs are saved and processed with zero validation — no content filtering, no hidden-text detection, no metadata checks. This allows poisoned data into the vector store. |
+| 2 | **No data validation before embedding** | `app.py:41-67` | Text is extracted, chunked, and embedded directly into ChromaDB with no integrity checks. Poisoned content becomes indistinguishable from legitimate data once embedded. |
+| 3 | **Weak system prompt** | `app.py:86-95` | The prompt template provides no guardrails against instruction injection. Since the vector store already contains poisoned data, the LLM has no defense when it receives poisoned chunks as context. |
+| 4 | **Unrestricted retrieval** | `app.py:104` | The retriever fetches the top 5 chunks (`k=5`) without relevance thresholds, increasing the chance poisoned chunks are included. |
+| 5 | **No document provenance** | Entire pipeline | There is no tracking of who uploaded what, no source authentication, and no audit logging of ingested data. |
 
 ---
 
@@ -72,7 +76,7 @@ This version is **deliberately insecure** to serve as a teaching tool. The key w
 
 ```bash
 git clone https://github.com/<your-org>/oss-ai-security-blueprint.git
-cd oss-ai-security-blueprint/labs/RAG-Poisoning/Vulnerable-Version
+cd oss-ai-security-blueprint/labs/Prompt\ Injection/Vulnerable-Version
 ```
 
 ### 2. Build and launch the stack
@@ -117,7 +121,7 @@ Ask questions like:
 
 ### Step 4 — Observe the Manipulation
 
-The AI assistant will parrot the injected instructions, recommending the candidate regardless of their actual qualifications. The poisoned text in the PDF overrides the system prompt, demonstrating a successful RAG poisoning attack.
+The AI assistant will parrot the injected instructions, recommending the candidate regardless of their actual qualifications. The poisoned data stored in the vector database overrides the system prompt when retrieved, demonstrating a successful data poisoning attack on the RAG pipeline (OWASP LLM08 Scenario #1).
 
 ---
 
@@ -162,7 +166,11 @@ This lab is intended **strictly for educational and authorized security research
 
 ## References
 
-- [OWASP Top 10 for LLM Applications](https://genai.owasp.org/)
+- [OWASP LLM08:2025 — Vector and Embedding Weaknesses](https://genai.owasp.org/llmrisk/llm08-vector-and-embedding-weaknesses/)
+- [OWASP LLM01:2025 — Prompt Injection](https://genai.owasp.org/llmrisk/llm01-prompt-injection/) *(related — the attack payload uses prompt injection techniques)*
+- [OWASP LLM04:2025 — Data and Model Poisoning](https://genai.owasp.org/llmrisk/llm04-data-and-model-poisoning/) *(related — data poisoning concepts)*
+- [How RAG Poisoning Made Llama3 Racist!](https://blog.repello.ai/how-rag-poisoning-made-llama3-racist-1c5e390dd564) *(referenced by OWASP LLM08)*
+- [New ConfusedPilot Attack Targets AI Systems with Data Poisoning](https://www.blackhatethicalhacking.com/news/new-confusedpilot-attack-targets-ai-systems-with-data-poisoning/) *(referenced by OWASP LLM08)*
 - [LangChain Documentation](https://python.langchain.com/)
 - [ChromaDB Documentation](https://docs.trychroma.com/)
 - [Ollama Documentation](https://ollama.com/)
