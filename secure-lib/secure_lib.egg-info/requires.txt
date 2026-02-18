@@ -1,0 +1,5 @@
+regex>=2023.0
+
+[dev]
+pytest
+pytest-cov
