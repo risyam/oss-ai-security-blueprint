@@ -11,7 +11,7 @@ services:
       - .:/app
 
   ollama-service:
-    image: ollama/ollama:latest
+    image: ollama/ollama:0.5.7
     ports:
       - "11434:11434"
     volumes:

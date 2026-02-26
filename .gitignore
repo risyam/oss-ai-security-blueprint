@@ -1,2 +1,12 @@
 **/.DS_Store
 .DS_Store
+**/__pycache__/
+**/*.pyc
+**/.pytest_cache/
+**/.mypy_cache/
+**/.ruff_cache/
+**/.venv/
+secure-lib/.pytest_cache/
+secure-lib/tests/__pycache__/
+secure-lib/secure_lib/**/__pycache__/
+**/temp_resume.pdf

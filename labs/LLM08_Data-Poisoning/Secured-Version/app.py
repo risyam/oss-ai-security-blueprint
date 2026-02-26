@@ -101,7 +101,7 @@ wait_for_ollama()
 
 if "security_components" not in st.session_state:
     st.session_state.security_components = {
-        "injection_detector": InjectionDetector(threshold=0.5),
+        "injection_detector": InjectionDetector(threshold=0.35),
         "context_sanitizer": ContextSanitizer(),
         "provenance_validator": ProvenanceValidator(
             max_file_size_bytes=5 * 1024 * 1024,  # 5 MB
@@ -220,10 +220,16 @@ if uploaded_file:
         with st.spinner("Validating and processing resume..."):
 
             file_bytes = uploaded_file.getbuffer()
+            file_content = bytes(file_bytes)
+
+            # Strict file signature check to prevent MIME spoofing.
+            if not file_content.startswith(b"%PDF-"):
+                st.error("❌ Document rejected: File signature is not a valid PDF.")
+                st.stop()
 
             # ─── DEFENSE 1: Provenance Validation ───
             prov_result = sec["provenance_validator"].register_document(
-                content=bytes(file_bytes),
+                content=file_content,
                 filename=uploaded_file.name,
                 source="user_upload",
                 content_type="application/pdf",
@@ -238,7 +244,7 @@ if uploaded_file:
 
             # Save and load
             with open("temp_resume.pdf", "wb") as f:
-                f.write(file_bytes)
+                f.write(file_content)
 
             loader = PyPDFLoader("temp_resume.pdf")
             docs = loader.load()
@@ -396,7 +402,17 @@ if uploaded_file:
                 output_leak = sec["leak_detector"].scan_output(response)
                 log_security_event(output_leak.to_log_entry())
 
-                if not output_check.is_valid or output_leak.is_leaking:
+                # ─── DEFENSE 10: Output Token Check ───
+                output_token_check = sec["token_enforcer"].check_output(response)
+                log_security_event(output_token_check.to_log_entry())
+
+                if not output_token_check.allowed:
+                    st.warning("⚠️ Response blocked due to output token policy.")
+                    response = "[Response blocked due to output token policy]"
+                elif output_leak.is_leaking:
+                    st.warning("⚠️ Response blocked due to potential system prompt leakage.")
+                    response = "[Response blocked due to potential system prompt leakage]"
+                elif not output_check.is_valid:
                     st.warning("⚠️ Response was sanitized due to policy violations.")
                     response = output_check.sanitized_output or "[Response blocked by security policy]"
 
