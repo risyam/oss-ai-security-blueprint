@@ -75,6 +75,8 @@ cd labs/LLM08_Data-Poisoning/Secured-Version
 docker compose up --build
 ```
 
+Dependencies are pinned in `requirements.lock.txt` for reproducible builds.
+
 Open **[http://localhost:8502](http://localhost:8502)**
 
 > **Tip:** Run the Vulnerable Version on port 8501 simultaneously for a side-by-side comparison.

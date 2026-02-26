@@ -85,6 +85,8 @@ cd oss-ai-security-blueprint/labs/Prompt\ Injection/Vulnerable-Version
 docker compose up --build
 ```
 
+Dependencies are pinned in `requirements.lock.txt` for reproducible builds.
+
 > **Note:** The first run will take several minutes as Ollama downloads the `llama3` model (~4.7 GB).
 
 ### 3. Open the app
