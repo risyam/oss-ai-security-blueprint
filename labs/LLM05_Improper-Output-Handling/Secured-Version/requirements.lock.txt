@@ -1,0 +1,9 @@
+# Generated from requirements.in for reproducible builds.
+# Recommended update flow:
+#   pip install pip-tools
+#   pip-compile --generate-hashes --output-file requirements.lock.txt requirements.in
+streamlit==1.42.2
+langchain==0.3.20
+langchain-community==0.3.19
+ollama==0.4.7
+requests==2.32.3

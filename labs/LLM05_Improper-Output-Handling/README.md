@@ -9,12 +9,22 @@ This lab demonstrates how unsafe handling of model output can become a direct ex
 | Version | Port | Description |
 |---------|------|-------------|
 | [Vulnerable](./Vulnerable-Version/) | 8503 | Renders model HTML unsafely and triggers network actions from model output |
+| [Secured](./Secured-Version/) | 8504 | Validates output, enforces schema, and gates side effects with policy + approval |
 
 ## Quick Start
 
 ```bash
+# Vulnerable version
 cd labs/LLM05_Improper-Output-Handling/Vulnerable-Version
 docker compose up --build
 ```
 
-Open `http://localhost:8503`
+```bash
+# Secured version
+cd labs/LLM05_Improper-Output-Handling/Secured-Version
+docker compose up --build
+```
+
+Open:
+- Vulnerable: `http://localhost:8503`
+- Secured: `http://localhost:8504`
