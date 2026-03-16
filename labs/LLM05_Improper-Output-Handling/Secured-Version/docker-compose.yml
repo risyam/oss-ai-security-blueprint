@@ -1,0 +1,24 @@
+services:
+  secured-output-app:
+    build:
+      context: ../../..
+      dockerfile: labs/LLM05_Improper-Output-Handling/Secured-Version/Dockerfile
+    ports:
+      - "8504:8501"
+    environment:
+      OLLAMA_BASE_URL: http://ollama-service:11434
+      INTERNAL_API_TOKEN: dev-internal-token
+    depends_on:
+      - ollama-service
+
+  ollama-service:
+    image: ollama/ollama:0.5.7
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    entrypoint: /bin/sh
+    command: -c "ollama serve & sleep 5 && ollama pull llama3 && wait"
+
+volumes:
+  ollama_data:

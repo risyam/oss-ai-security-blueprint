@@ -9,7 +9,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends build-essential
 COPY labs/LLM08_Data-Poisoning/Secured-Version/requirements.lock.txt /tmp/requirements.lock.txt
 RUN pip install --no-cache-dir --upgrade pip && pip install --no-cache-dir -r /tmp/requirements.lock.txt
 
-# Copy secure-lib
+# Copy reusable security controls
 COPY secure-lib /secure-lib
 RUN pip install -e /secure-lib
 

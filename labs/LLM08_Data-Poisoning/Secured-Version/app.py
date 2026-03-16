@@ -27,7 +27,7 @@ from langchain.chains import RetrievalQA
 from langchain.prompts import PromptTemplate
 
 # ──────────────────────────────────────────────
-# Import secure-lib components
+# Import reusable security components
 # ──────────────────────────────────────────────
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "..", "secure-lib"))
 
