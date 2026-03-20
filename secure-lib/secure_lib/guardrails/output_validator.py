@@ -1,3 +1,4 @@
+import json
 import logging
 import re
 from dataclasses import dataclass, field
@@ -95,7 +96,7 @@ class OutputValidator:
 
         if not result.is_valid:
             payload = result.to_log_entry()
-            logger.warning("Output validation failed: %s", regex.dumps(payload) if regex else payload)
+            logger.warning("Output validation failed: %s", json.dumps(payload))
 
         return result
 
