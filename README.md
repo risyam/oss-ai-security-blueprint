@@ -1,10 +1,12 @@
 # OSS AI Security Blueprint
 
+![The Open Source AI Stack](docs/The%20Open%20Source%20AI%20Stack.png)
+
 A practical, open-source blueprint for securing LLM-powered applications, focused on real attack paths and defensive controls. The repo includes architecture diagrams, threat mapping, and runnable labs demonstrating OWASP LLM vulnerabilities in vulnerable vs secured implementations.
 
 ## What This Repo Contains
 
-- `docs/` architecture diagrams and attack path mapping
+- `docs/` architecture diagrams ([Data Flow](docs/reference-architecture/data-flow.md)) and attack mapping ([Attack Paths](docs/attack-paths/attack-paths.md))
 - `labs/` runnable labs (vulnerable + secured):
   - `LLM01_Prompt-Injection/` (Direct/Indirect Prompt Injection)
   - `LLM05_Improper-Output-Handling/` (Unsafe HTML/Script Execution, Tool Abuse)
