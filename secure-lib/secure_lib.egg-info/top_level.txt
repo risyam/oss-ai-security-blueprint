@@ -1,2 +1,0 @@
-secure_lib
-tests

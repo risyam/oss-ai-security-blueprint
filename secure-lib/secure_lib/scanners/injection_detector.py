@@ -1,3 +1,4 @@
+import json
 import logging
 import re
 from dataclasses import dataclass, field
@@ -113,7 +114,7 @@ class InjectionDetector:
 
         if result.is_injection:
             payload = result.to_log_entry()
-            logger.warning("Injection detected: %s", regex.dumps(payload) if regex else payload)
+            logger.warning("Injection detected: %s", json.dumps(payload))
 
         return result
 

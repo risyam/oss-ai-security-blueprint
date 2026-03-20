@@ -10,3 +10,6 @@ secure-lib/.pytest_cache/
 secure-lib/tests/__pycache__/
 secure-lib/secure_lib/**/__pycache__/
 **/temp_resume.pdf
+**/*.egg-info/
+.env
+.env.*
