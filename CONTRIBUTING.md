@@ -19,7 +19,7 @@ We welcome contributions of all types:
 
 2. **Clone the repository:**
    ```bash
-   git clone <repository_url>
+   git clone https://github.com/risyam/oss-ai-security-blueprint.git
    cd oss-ai-security-blueprint
    ```
 
