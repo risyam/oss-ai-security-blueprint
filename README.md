@@ -10,6 +10,7 @@ A practical, open-source blueprint for securing LLM-powered applications, focuse
 - `labs/` runnable labs (vulnerable + secured):
   - `LLM01_Prompt-Injection/` (Direct/Indirect Prompt Injection)
   - `LLM05_Improper-Output-Handling/` (Unsafe HTML/Script Execution, Tool Abuse)
+  - `LLM06_Excessive-Agency/` (Unrestricted Agent Tool Access, Data Exfiltration)
   - `LLM08_Data-Poisoning/` (RAG Context Poisoning)
 - `secure-lib/` reusable LLM security components (scanners, validators, policy, monitoring)
 - `controls/`, `governance/`, `compliance/`, `implementation/` placeholders for future expansion
