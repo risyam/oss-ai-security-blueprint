@@ -93,7 +93,7 @@ pydantic-core==2.41.5
 pydantic-settings==2.13.1
 pydeck==0.9.1
 pygments==2.19.2
-pypdf==5.3.1
+pypdf==6.10.0
 pypika==0.51.1
 pyproject-hooks==1.2.0
 python-dateutil==2.9.0.post0
