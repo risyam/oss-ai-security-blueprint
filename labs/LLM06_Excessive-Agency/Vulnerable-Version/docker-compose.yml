@@ -1,0 +1,21 @@
+services:
+  vulnerable-agency-app:
+    build: .
+    ports:
+      - "8504:8501"
+    environment:
+      OLLAMA_BASE_URL: http://ollama-service:11434
+    depends_on:
+      - ollama-service
+
+  ollama-service:
+    image: ollama/ollama:0.5.7
+    ports:
+      - "11436:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    entrypoint: /bin/sh
+    command: -c "ollama serve & sleep 5 && ollama pull llama3 && wait"
+
+volumes:
+  ollama_data:
