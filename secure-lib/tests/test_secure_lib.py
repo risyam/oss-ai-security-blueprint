@@ -262,3 +262,28 @@ class TestTokenLimitEnforcer:
         enforcer.reset()
         usage = enforcer.get_usage()
         assert usage["tokens_used"] == 0
+
+from secure_lib.privacy.tenant_scope_enforcer import TenantScopeEnforcer
+from secure_lib.privacy.field_access_policy import FieldAccessPolicy
+from secure_lib.privacy.pii_redactor import PIIRedactor
+from secure_lib.privacy.data_minimizer import DataMinimizer
+
+
+class TestPrivacyControls:
+    def test_tenant_scope(self):
+        enforcer = TenantScopeEnforcer()
+        assert enforcer.is_allowed("u1", "u1", "employee").allowed
+        assert not enforcer.is_allowed("u1", "u2", "employee").allowed
+
+    def test_field_access(self):
+        policy = FieldAccessPolicy({"salary": "restricted", "team": "public"})
+        filtered = policy.filter_record({"salary": "100k", "team": "eng"}, "employee")
+        assert "team" in filtered
+        assert "salary" not in filtered
+
+    def test_pii_redactor(self):
+        redactor = PIIRedactor()
+        scan = redactor.scan("Email me at a@b.com")
+        assert scan.findings
+        assert "REDACTED" in redactor.redact("Call 555-111-2222")
+
