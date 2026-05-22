@@ -9,6 +9,7 @@ A practical, open-source blueprint for securing LLM-powered applications, focuse
 - `docs/` architecture diagrams ([Data Flow](docs/reference-architecture/data-flow.md)) and attack mapping ([Attack Paths](docs/attack-paths/attack-paths.md))
 - `labs/` runnable labs (vulnerable + secured):
   - `LLM01_Prompt-Injection/` (Direct/Indirect Prompt Injection)
+  - `LLM02_Sensitive-Information-Disclosure/` (Sensitive Data Exfiltration, Unauthorized Access)
   - `LLM05_Improper-Output-Handling/` (Unsafe HTML/Script Execution, Tool Abuse)
   - `LLM06_Excessive-Agency/` (Unrestricted Agent Tool Access, Data Exfiltration)
   - `LLM08_Data-Poisoning/` (RAG Context Poisoning)
