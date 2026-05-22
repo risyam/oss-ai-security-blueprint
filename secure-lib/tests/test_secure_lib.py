@@ -267,6 +267,10 @@ from secure_lib.privacy.tenant_scope_enforcer import TenantScopeEnforcer
 from secure_lib.privacy.field_access_policy import FieldAccessPolicy
 from secure_lib.privacy.pii_redactor import PIIRedactor
 from secure_lib.privacy.data_minimizer import DataMinimizer
+from secure_lib.supply_chain.artifact_integrity_verifier import ArtifactIntegrityVerifier
+from secure_lib.supply_chain.model_provenance_registry import ModelProvenanceRegistry
+from secure_lib.supply_chain.dependency_policy_enforcer import DependencyPolicyEnforcer
+from secure_lib.supply_chain.lora_adapter_policy import LoraAdapterPolicy
 
 
 class TestPrivacyControls:
@@ -286,4 +290,29 @@ class TestPrivacyControls:
         scan = redactor.scan("Email me at a@b.com")
         assert scan.findings
         assert "REDACTED" in redactor.redact("Call 555-111-2222")
+
+
+class TestSupplyChainControls:
+    def test_integrity(self):
+        verifier = ArtifactIntegrityVerifier()
+        content = b"model"
+        import hashlib
+        expected = hashlib.sha256(content).hexdigest()
+        assert verifier.verify(content, expected).valid
+        assert not verifier.verify(content, "bad").valid
+
+    def test_provenance(self):
+        registry = ModelProvenanceRegistry()
+        assert registry.validate({"publisher": "trusted-ai-labs", "registry_domain": "registry.internal.ai", "signed_manifest": True}).allowed
+        assert not registry.validate({"publisher": "unknown", "registry_domain": "registry.internal.ai", "signed_manifest": True}).allowed
+
+    def test_dependency(self):
+        enforcer = DependencyPolicyEnforcer(approved={"fastapi": "0.111.0"})
+        assert enforcer.validate({"fastapi": "0.111.0"}).allowed
+        assert not enforcer.validate({"fastapi": "1.0.0"}).allowed
+
+    def test_lora_policy(self):
+        policy = LoraAdapterPolicy()
+        assert policy.validate({"origin": "registry.internal.ai"}, "llama3").allowed
+        assert not policy.validate({"origin": "evil.com"}, "llama3").allowed
 
