@@ -50,10 +50,10 @@ jsonpointer==3.1.1
 jsonschema==4.26.0
 jsonschema-specifications==2025.9.1
 kubernetes==35.0.0
-langchain==0.3.20
+langchain==0.3.30
 langchain-chroma==0.2.2
 langchain-community==0.3.19
-langchain-core==0.3.84
+langchain-core==0.3.86
 langchain-text-splitters==0.3.11
 langsmith==0.3.45
 markdown-it-py==4.0.0
