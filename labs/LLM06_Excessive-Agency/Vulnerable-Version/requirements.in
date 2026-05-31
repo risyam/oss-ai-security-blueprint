@@ -1,5 +1,1 @@
-streamlit
-langchain
-langchain-community
-ollama
-requests
+-r ../../../requirements/agent-lab.in

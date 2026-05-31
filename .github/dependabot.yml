@@ -1,0 +1,39 @@
+version: 2
+updates:
+  - package-ecosystem: "pip"
+    directories:
+      - "/requirements"
+      - "/labs/LLM01_Prompt-Injection/Secured-Version"
+      - "/labs/LLM01_Prompt-Injection/Vulnerable-Version"
+      - "/labs/LLM02_Sensitive-Information-Disclosure/Secured-Version"
+      - "/labs/LLM02_Sensitive-Information-Disclosure/Vulnerable-Version"
+      - "/labs/LLM03_Supply-Chain/Secured-Version"
+      - "/labs/LLM03_Supply-Chain/Vulnerable-Version"
+      - "/labs/LLM04_Data-and-Model-Poisoning/Secured-Version"
+      - "/labs/LLM04_Data-and-Model-Poisoning/Vulnerable-Version"
+      - "/labs/LLM05_Improper-Output-Handling/Secured-Version"
+      - "/labs/LLM05_Improper-Output-Handling/Vulnerable-Version"
+      - "/labs/LLM06_Excessive-Agency/Secured-Version"
+      - "/labs/LLM06_Excessive-Agency/Vulnerable-Version"
+      - "/labs/LLM07_System-Prompt-Leakage/Secured-Version"
+      - "/labs/LLM07_System-Prompt-Leakage/Vulnerable-Version"
+      - "/labs/LLM08_Data-Poisoning/Secured-Version"
+      - "/labs/LLM08_Data-Poisoning/Vulnerable-Version"
+      - "/labs/LLM09_Misinformation/Secured-Version"
+      - "/labs/LLM09_Misinformation/Vulnerable-Version"
+      - "/labs/LLM10_Unbounded-Consumption/Secured-Version"
+      - "/labs/LLM10_Unbounded-Consumption/Vulnerable-Version"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    groups:
+      python-lab-runtime:
+        patterns:
+          - "streamlit"
+          - "langchain*"
+          - "ollama"
+          - "requests"
+          - "urllib3"
+          - "pypdf"
+          - "pillow"
+          - "gitpython"

@@ -1,0 +1,4 @@
+# Shared baseline for retrieval/document-ingestion labs.
+-r agent-lab.in
+langchain-chroma
+pypdf

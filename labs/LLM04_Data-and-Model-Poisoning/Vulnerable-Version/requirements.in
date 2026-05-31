@@ -1,4 +1,1 @@
-streamlit
-langchain-community
-langchain-core
-requests
+-r ../../../requirements/common-llm-app.in
