@@ -1,0 +1,5 @@
+# Shared baseline for lightweight Streamlit + LangChain lab apps.
+streamlit
+langchain-community
+langchain-core
+requests

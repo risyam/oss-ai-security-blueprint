@@ -1,0 +1,4 @@
+# Shared baseline for labs that use LangChain agents or Ollama directly.
+-r common-llm-app.in
+langchain
+ollama

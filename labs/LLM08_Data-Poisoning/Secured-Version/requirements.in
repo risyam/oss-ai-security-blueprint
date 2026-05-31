@@ -1,7 +1,1 @@
-streamlit
-langchain
-langchain-community
-langchain-chroma
-pypdf
-ollama
-requests
+-r ../../../requirements/rag-lab.in
