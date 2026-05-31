@@ -2,4 +2,4 @@
 streamlit==1.42.2
 langchain-community==0.3.27
 langchain-core==0.3.41
-requests==2.32.3
+requests==2.33.0
