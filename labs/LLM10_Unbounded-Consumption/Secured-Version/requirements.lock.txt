@@ -1,5 +1,5 @@
 # Lightweight lock set for demo reproducibility.
-streamlit==1.42.2
+streamlit==1.54.0
 langchain-community==0.3.27
 langchain-core==0.3.41
 requests==2.32.3
