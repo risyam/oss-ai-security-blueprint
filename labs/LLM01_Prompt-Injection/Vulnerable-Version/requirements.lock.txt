@@ -3,7 +3,7 @@
 #   pip install pip-tools
 #   pip-compile --generate-hashes --output-file requirements.lock.txt requirements.in
 aiohappyeyeballs==2.6.2
-aiohttp==3.13.5
+aiohttp==3.14.1
 aiosignal==1.4.0
 altair==5.5.0
 annotated-types==0.7.0
