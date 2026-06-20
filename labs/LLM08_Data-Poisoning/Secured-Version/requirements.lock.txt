@@ -90,7 +90,7 @@ protobuf==6.33.6
 pyarrow==23.0.1
 pydantic==2.12.5
 pydantic-core==2.41.5
-pydantic-settings==2.13.1
+pydantic-settings==2.14.2
 pydeck==0.9.1
 pygments==2.19.2
 pypdf==6.10.2
